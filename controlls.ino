@@ -1,3 +1,7 @@
+/*By inputting the desired vector at the array
+ input the program outputs the desired ration 
+ in which the motors should run in order for
+  the robot to move in the correct direction.*/
 // Motors' PWM pins
 const int motorL = 3;
 const int motorB = 6;
