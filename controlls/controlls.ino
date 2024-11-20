@@ -8,6 +8,8 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
+Adafruit_MPU6050 mpu;
+
 // Motors' PWM pins
 const int motorL = 3;
 const int motorB = 6;
@@ -43,6 +45,11 @@ void setup() {
 
   // Start the serial communication at a baud rate of 9600
   Serial.begin(9600);
+
+  // Configure gyroscope range and filter bandwidth
+  mpu.setGyroRange(MPU6050_RANGE_500_DEG); // Gyroscope range: ±250°/s
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ); // Set filter bandwidth
+  mpu.setAccelerometerRange(MPU6050_RANGE_8_G); // Accelerometer range: ±8g
 
   // Introduce a short delay to ensure the system is ready before proceeding with operations
   delay(20);
@@ -102,16 +109,29 @@ int a = 0;
  * to perform the movement once, ensuring the action is executed only once by setting a flag.
  */
 void loop() {
-  if (Serial.available() > 0) {
-    // Read the incoming byte
-    char incomingByte = Serial.read();
+  // Get gyroscope data
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  
+
+  // Print gyroscope values (in radians per second)
+  Serial.println("Gyro X: "); 
+  Serial.println(g.gyro.x);
+  Serial.println(", Y: "); 
+  Serial.println(g.gyro.y);
+  Serial.println(", Z: "); 
+  Serial.println(g.gyro.z);
+
+  // if (Serial.available() > 0) {
+  //   // Read the incoming byte
+  //   char incomingByte = Serial.read();
     
-    if (incomingByte == 'S'){
-      while (a == 0){
-        input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
-        movement(input);
-        a = 1;
-      }
-    }
-  }
+  //   if (incomingByte == 'S'){
+  //     while (a == 0){
+  //       input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
+  //       movement(input);
+  //       a = 1;
+  //     }
+  //   }
+  // }
 }
