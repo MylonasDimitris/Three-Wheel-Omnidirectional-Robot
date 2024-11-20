@@ -2,6 +2,12 @@
  input the program outputs the desired ration 
  in which the motors should run in order for
   the robot to move in the correct direction.*/
+
+//Libraries for gyroscope
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+
 // Motors' PWM pins
 const int motorL = 3;
 const int motorB = 6;
