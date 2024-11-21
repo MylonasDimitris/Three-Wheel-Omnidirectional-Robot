@@ -4,11 +4,11 @@
   the robot to move in the correct direction.*/
 
 //Libraries for gyroscope
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
-#include <Wire.h>
+#include "Wire.h"
+#include <MPU6050_light.h>
 
-Adafruit_MPU6050 mpu;
+MPU6050 mpu(Wire);
+unsigned long timer = 0;
 
 // Motors' PWM pins
 const int motorL = 3;
@@ -45,11 +45,18 @@ void setup() {
 
   // Start the serial communication at a baud rate of 9600
   Serial.begin(9600);
+  Wire.begin();
 
-  // Configure gyroscope range and filter bandwidth
-  mpu.setGyroRange(MPU6050_RANGE_500_DEG); // Gyroscope range: ±250°/s
-  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ); // Set filter bandwidth
-  mpu.setAccelerometerRange(MPU6050_RANGE_8_G); // Accelerometer range: ±8g
+  byte status = mpu.begin();
+  Serial.print(F("MPU6050 status: "));
+  Serial.println(status);
+  while(status!=0){ } // stop everything if could not connect to MPU6050
+  
+  Serial.println(F("Calculating offsets, do not move MPU6050"));
+  delay(1000);
+  // mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
+  //mpu.calcOffsets(); // gyro and accelero
+  Serial.println("Done!\n");
 
   // Introduce a short delay to ensure the system is ready before proceeding with operations
   delay(20);
@@ -110,17 +117,22 @@ int a = 0;
  */
 void loop() {
   // Get gyroscope data
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  
+  mpu.update();
 
-  // Print gyroscope values (in radians per second)
-  Serial.println("Gyro X: "); 
-  Serial.println(g.gyro.x);
-  Serial.println(", Y: "); 
-  Serial.println(g.gyro.y);
-  Serial.println(", Z: "); 
-  Serial.println(g.gyro.z);
+  float rotx = mpu.getAngleX();
+  float roty = mpu.getAngleY();
+  float rotz = mpu.getAngleZ();
+
+
+
+  Serial.print("rotx:");
+  Serial.println(rotx);
+  Serial.print("roty:");
+  Serial.println(roty);
+  Serial.print("rotz:");
+  Serial.println(rotz);
+  delay(10);
+
 
   // if (Serial.available() > 0) {
   //   // Read the incoming byte
