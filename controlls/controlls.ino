@@ -123,8 +123,7 @@ void loop() {
   float roty = mpu.getAngleY();
   float rotz = mpu.getAngleZ();
 
-
-
+  // Print the gyroscope data for debugging purposes
   Serial.print("rotx:");
   Serial.println(rotx);
   Serial.print("roty:");
@@ -133,17 +132,45 @@ void loop() {
   Serial.println(rotz);
   delay(10);
 
+  // Check if there is any incoming serial data
+  if (Serial.available() > 0) {
+    // Read the incoming byte
+    char incomingByte = Serial.read();
 
-  // if (Serial.available() > 0) {
-  //   // Read the incoming byte
-  //   char incomingByte = Serial.read();
-    
-  //   if (incomingByte == 'S'){
-  //     while (a == 0){
-  //       input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
-  //       movement(input);
-  //       a = 1;
-  //     }
-  //   }
-  // }
+    // Read the current rotation around the z-axis
+    rotz = mpu.getAngleZ();
+
+    // If the incoming byte is 'S', perform the movement
+    if (incomingByte == 'S') {
+      float tempz = rotz;
+
+      // Set the input vector for the movement function
+      input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
+
+      // Call the movement function to perform the movement
+      movement(input);
+
+      // Perform the movement in a loop
+      while (a == 0) {
+        // Get the updated gyroscope data
+        mpu.update();
+
+        // Read the current rotation around the z-axis
+        rotz = mpu.getAngleZ();
+
+        // If the rotation is greater than the previous value, increase the input vector
+        if (rotz > tempz) {
+          input[1] += (rotz - tempz) / 100;
+          input[0] -= (rotz - tempz) / 100;
+          movement(input);
+        }
+        // If the rotation is less than the previous value, decrease the input vector
+        else if (rotz < tempz) {
+          input[1] -= (tempz - rotz) / 100;
+          input[0] += (tempz - rotz) / 100;
+          movement(input);
+        }
+      }
+    }
+  }
 }
