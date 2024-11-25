@@ -144,6 +144,8 @@ void loop() {
     if (incomingByte == 'S') {
       float tempz = rotz;
 
+      delay(100);
+
       // Set the input vector for the movement function
       input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
 
@@ -158,18 +160,16 @@ void loop() {
         // Read the current rotation around the z-axis
         rotz = mpu.getAngleZ();
 
-        // If the rotation is greater than the previous value, increase the input vector
-        if (rotz > tempz) {
-          input[1] += (rotz - tempz) / 100;
-          input[0] -= (rotz - tempz) / 100;
+        if (rotz - tempz){
+          input[2] = (rotz - tempz) / 10;
           movement(input);
         }
-        // If the rotation is less than the previous value, decrease the input vector
-        else if (rotz < tempz) {
-          input[1] -= (tempz - rotz) / 100;
-          input[0] += (tempz - rotz) / 100;
+        else{
+          input[2] = (tempz - rotz) / 10;
           movement(input);
         }
+
+        
       }
     }
   }
