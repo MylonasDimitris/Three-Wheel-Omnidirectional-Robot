@@ -88,6 +88,7 @@ void movement(float input[]) {
   // Check if the maximum value is zero to avoid division by zero
   if (max == 0) {
     Serial.println("Error: Max value is zero, cannot normalize.");
+
     return;
   }
 
@@ -106,6 +107,55 @@ void movement(float input[]) {
   analogWrite(motorB, (int)(constrain(180 * abs(ratioR), 0, 180)));
   digitalWrite(enableB, ratioR > 0 ? HIGH : LOW);
 }
+
+
+void stop(){
+  analogWrite(motorL, 0);
+  analogWrite(motorR, 0);
+  analogWrite(motorB, 0);
+}
+
+
+void rotate(float degrees){
+
+  mpu.update();
+  float initialRotation = mpu.getAngleZ();
+
+  input[0] = 0.0; input[1] = 0.0; 
+  if (degrees > 0.0){
+    input[2] = 1.0;
+
+
+    do{
+      mpu.update();
+      movement(input);
+      Serial.println("BRUH");
+    }
+    while(abs(abs(mpu.getAngleZ()) - abs(initialRotation)) < abs(degrees));
+
+  }
+  else{
+    input[2] = -1.0;
+
+    
+    do{
+      mpu.update();
+      movement(input);
+      Serial.println("BRUH");
+    }
+    while(abs(abs(initialRotation) - abs(mpu.getAngleZ())) < abs(degrees));
+
+
+  }
+
+
+  Serial.println("EXITED");
+  input[2] = 0.0;
+  stop();
+
+}
+
+
 
 int a = 0;
 
@@ -145,7 +195,7 @@ void loop() {
       float tempz = rotz;
 
       delay(100);
-
+      
       // Set the input vector for the movement function
       input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
 
