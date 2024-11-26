@@ -109,47 +109,65 @@ void movement(float input[]) {
 }
 
 
-void stop(){
+/**
+ * Stops all motors by setting the PWM values to zero.
+ */
+void stop() {
+  // Set PWM values for all motors to zero to stop them
   analogWrite(motorL, 0);
   analogWrite(motorR, 0);
   analogWrite(motorB, 0);
 }
 
 
-void rotate(float degrees){
+/**
+ * Rotates the robot by a specified number of degrees.
+ *
+ * @param degrees The number of degrees to rotate the robot by.
+ */
+void rotate(float degrees) {
 
+  // Store the initial orientation of the robot
   mpu.update();
   float initialRotation = mpu.getAngleZ();
 
-  input[0] = 0.0; input[1] = 0.0; 
-  if (degrees > 0.0){
+  // Set the input forces to zero
+  input[0] = 0.0; input[1] = 0.0;
+
+  // If the rotation is clockwise
+  if (degrees > 0.0) {
+    // Set the input force to rotate clockwise
     input[2] = 1.0;
 
-
-    do{
+    // Rotate until the robot reaches the desired orientation
+    do {
+      // Update the gyroscope data
       mpu.update();
+      // Move the robot based on the input forces
       movement(input);
+      // Print a message to indicate that the robot is rotating
       Serial.println("BRUH");
-    }
-    while(abs(abs(mpu.getAngleZ()) - abs(initialRotation)) < abs(degrees));
-
+    } 
+    // Check if the robot has reached the desired orientation
+    while (abs(abs(mpu.getAngleZ()) - abs(initialRotation)) < abs(degrees));
   }
-  else{
+  // If the rotation is counter-clockwise
+  else {
+    // Set the input force to rotate counter-clockwise
     input[2] = -1.0;
 
-    
-    do{
+    // Rotate until the robot reaches the desired orientation
+    do {
+      // Update the gyroscope data
       mpu.update();
+      // Move the robot based on the input forces
       movement(input);
-      Serial.println("BRUH");
-    }
-    while(abs(abs(initialRotation) - abs(mpu.getAngleZ())) < abs(degrees));
-
+    } 
+    // Check if the robot has reached the desired orientation
+    while (abs(abs(initialRotation) - abs(mpu.getAngleZ())) < abs(degrees));
 
   }
-
-
-  Serial.println("EXITED");
+  // Stop the motors
   input[2] = 0.0;
   stop();
 
