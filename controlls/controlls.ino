@@ -7,17 +7,23 @@
 #include "Wire.h"
 #include <MPU6050_light.h>
 
+// Motors' encoders pins
+#define motorAchanA 9
+#define motorAchanA 10
+
+// Motors' PWM pins
+#define motorL 3
+#define motorB 6
+#define motorR 5
+
+// Motors' Direction pins
+#define enableL 2
+#define enableB 7
+#define enableR 4
+
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
 
-// Motors' PWM pins
-const int motorL = 3;
-const int motorB = 6;
-const int motorR = 5;
-// Motors' Direction pins
-const int enableL = 2;
-const int enableB = 7;
-const int enableR = 4;
 
 float output[3] = {0.0};
 float input[3] = {0.0};  // {fx, fy, fw}
@@ -46,6 +52,8 @@ void setup() {
   // Start the serial communication at a baud rate of 9600
   Serial.begin(9600);
   Wire.begin();
+
+  Serial.print("Starting");
 
   byte status = mpu.begin();
   Serial.print(F("MPU6050 status: "));
