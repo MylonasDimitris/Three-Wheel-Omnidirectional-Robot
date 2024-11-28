@@ -236,14 +236,10 @@ void loop() {
         // Read the current rotation around the z-axis
         rotz = mpu.getAngleZ();
 
-        if (rotz - tempz){
-          input[2] = (rotz - tempz) / 10;
-          movement(input);
-        }
-        else{
-          input[2] = (tempz - rotz) / 10;
-          movement(input);
-        }
+
+        input[2] = (tempz - rotz) / 20;
+        movement(input);
+
 
         
       }
