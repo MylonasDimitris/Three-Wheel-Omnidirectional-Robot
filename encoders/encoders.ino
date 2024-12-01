@@ -1,47 +1,36 @@
-#define outputA 9
-#define outputB 10
-#define motor 5
+#define inputA 2
+#define inputB 3
 
-int counter = 0;
-int aState;
-int aLastState;
+volatile int encoderCount = 0;  // Variable to store the pulse count
 
-unsigned long previousMillis = 0;  // Stores the last time an action was performed
-const long interval = 5000;  // 5 seconds interval
+// ISR for encoder signal A
+void encoderISR() {
+  if (digitalRead(inputB) == HIGH) {  // Check the state of channel B
+    encoderCount++;
+  } else {
+    encoderCount--;
+  }
+}
 
 void setup ()  {
-  pinMode (outputA,INPUT);
-  pinMode (outputB,INPUT);
 
-  Serial.begin (9600);
+  Serial.begin(9600);
 
-  aLastState = digitalRead(outputA);
-
-  analogWrite(motor, 180);
-  previousMillis = millis();
+  pinMode(inputB, INPUT_PULLUP);
+  
+  // Set up interrupt on pin 2
+  pinMode(inputA, INPUT_PULLUP);  // Enable internal pull-up resistor
+  attachInterrupt(digitalPinToInterrupt(inputA), encoderISR, RISING);  // Trigger on rising edge
+  
+  // Using Signal B for direction:
+  pinMode(inputB, INPUT_PULLUP);  //Direction detection
+  
 }
 
 void loop () {
-  
+  // Print the encoder count for debugging
+  Serial.print("Encoder Count: ");
+  Serial.println(encoderCount);
 
-  unsigned long currentMillis = millis();  // Get the current time
-
-  // Check if 5 seconds have passed
-  if (currentMillis - previousMillis >= interval) {
-    // If 5 seconds have passed, write 0 to the analog pin
-    analogWrite(motor, 0);
-  }
-  aState = digitalRead(outputA);
-  if (aState != aLastState) {
-   if (digitalRead (outputB) != aState) {
-      counter++;
-     } else {
-       counter --;
-     }
-     Serial.print("Position: ");
-     Serial.println(counter);
-     
-}
-
- aLastState = aState;
+  delay(100);  // Adjust delay as needed
 }
