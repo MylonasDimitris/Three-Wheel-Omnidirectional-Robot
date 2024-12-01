@@ -1,5 +1,9 @@
 #define inputA 2
 #define inputB 3
+#define PPR 100  // Pulse Per Rotation
+#define PI 3.14159
+#define wheelRadius 5
+#define distancePerPulse (2 * PI * wheelRadius) / PPR
 
 volatile int encoderCount = 0;  // Variable to store the pulse count
 
@@ -28,9 +32,15 @@ void setup ()  {
 }
 
 void loop () {
-  // Print the encoder count for debugging
+  // Calculate the total distance traveled
+  float distanceTraveled = encoderCount * distancePerPulse;
+
+  // Print the encoder count and the distance
   Serial.print("Encoder Count: ");
-  Serial.println(encoderCount);
+  Serial.print(encoderCount);
+  Serial.print(" | Distance Traveled: ");
+  Serial.print(distanceTraveled);
+  Serial.println(" cm");
 
   delay(100);  // Adjust delay as needed
 }
