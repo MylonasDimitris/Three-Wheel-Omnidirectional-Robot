@@ -31,6 +31,25 @@ void setup() {
   pinMode(enableB, OUTPUT);
   pinMode(enableR, OUTPUT);
 
+
+  pinMode(inputB1, INPUT_PULLUP);
+  pinMode(inputB2, INPUT_PULLUP);
+  pinMode(inputB3, INPUT_PULLUP);
+
+  
+  // Set up interrupt on pin 2
+  pinMode(inputA1, INPUT_PULLUP);  // Enable internal pull-up resistor
+  attachInterrupt(digitalPinToInterrupt(inputA1), encoderISR1, RISING);  // Trigger on rising edge
+
+  // Set up interrupt on pin 19
+  pinMode(inputA2, INPUT_PULLUP);  // Enable internal pull-up resistor
+  attachInterrupt(digitalPinToInterrupt(inputA2), encoderISR2, RISING);  // Trigger on rising edge
+
+  // Set up interrupt on pin 20
+  pinMode(inputA3, INPUT_PULLUP);  // Enable internal pull-up resistor
+  attachInterrupt(digitalPinToInterrupt(inputA3), encoderISR3, RISING);  // Trigger on rising edge
+
+
   // Start the serial communication at a baud rate of 9600
   Serial.begin(9600);
   Wire.begin();

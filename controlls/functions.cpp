@@ -10,6 +10,53 @@ float calculations[3][3] = {
 
 float output[3] = {0.0};
 
+
+
+
+
+volatile int encoderCount1 = 0;  // Variable to store the pulse count
+volatile int encoderCount2 = 0;  // Variable to store the pulse count
+volatile int encoderCount3 = 0;  // Variable to store the pulse count
+
+// Interrupt Service Routine for encoder signal A
+/**
+ * This ISR handles the encoder signal for channel A.
+ * It increments or decrements the encoder count based on the state of channel B.
+ */
+int encoderISR1() {
+  if (digitalRead(inputB1) == HIGH) {  // Channel B is HIGH, increment count
+    encoderCount1++;
+    return(encoderCount1);
+  } else {  // Channel B is LOW, decrement count
+    encoderCount1--;
+    return(encoderCount1);
+  }
+}
+
+
+int encoderISR2() {
+  if (digitalRead(inputB2) == HIGH) {  // Channel B is HIGH, increment count
+    encoderCount2++;
+    return(encoderCount1);
+  } else {  // Channel B is LOW, decrement count
+    encoderCount2--;
+    return(encoderCount1);
+  }
+}
+
+
+int encoderISR3() {
+  if (digitalRead(inputB3) == HIGH) {  // Channel B is HIGH, increment count
+    encoderCount3++;
+    return(encoderCount1);
+  } else {  // Channel B is LOW, decrement count
+    encoderCount3--;
+    return(encoderCount1);
+  }
+}
+
+
+
 /**
  * Function to control the movement of a three-wheel omnidirectional robot.
  * It calculates the motor outputs based on the input forces and normalizes

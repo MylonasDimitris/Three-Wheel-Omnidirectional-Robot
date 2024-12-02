@@ -12,8 +12,12 @@
 #define enableR 4
 
 // Encoder pins
-#define inputA 3 
-#define inputB 2
+#define inputA1 3
+#define inputB1 2
+#define inputA2 18
+#define inputB2 19
+#define inputA3 21
+#define inputB3 20
 
 
 #define PPR 360  // Pulse Per Rotation
