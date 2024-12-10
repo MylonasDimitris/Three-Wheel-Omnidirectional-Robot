@@ -1,6 +1,19 @@
 #include "functions.h"
 #include <Arduino.h>
 #include "pins.h"
+#include <Wire.h>
+#include <MPU6050_light.h>
+
+MPU6050 mpu(Wire);
+
+int MPUInit() {
+  Wire.begin();
+  mpu.begin();
+  mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
+  mpu.calcOffsets(); // gyro and accelero
+  return 1;
+}
+
 
 float calculations[3][3] = {
   {1.0 / 3.0, -1.0 / sqrt(3.0), 1.0 / 3.0},
@@ -9,7 +22,6 @@ float calculations[3][3] = {
 };
 
 float output[3] = {0.0};
-
 
 
 
@@ -23,35 +35,29 @@ volatile int encoderCount3 = 0;  // Variable to store the pulse count
  * This ISR handles the encoder signal for channel A.
  * It increments or decrements the encoder count based on the state of channel B.
  */
-int encoderISR1() {
+void encoderISR1() {
   if (digitalRead(inputB1) == HIGH) {  // Channel B is HIGH, increment count
     encoderCount1++;
-    return(encoderCount1);
   } else {  // Channel B is LOW, decrement count
     encoderCount1--;
-    return(encoderCount1);
   }
 }
 
 
-int encoderISR2() {
+void encoderISR2() {
   if (digitalRead(inputB2) == HIGH) {  // Channel B is HIGH, increment count
     encoderCount2++;
-    return(encoderCount1);
   } else {  // Channel B is LOW, decrement count
     encoderCount2--;
-    return(encoderCount1);
   }
 }
 
 
-int encoderISR3() {
+void encoderISR3() {
   if (digitalRead(inputB3) == HIGH) {  // Channel B is HIGH, increment count
     encoderCount3++;
-    return(encoderCount1);
   } else {  // Channel B is LOW, decrement count
     encoderCount3--;
-    return(encoderCount1);
   }
 }
 
@@ -124,7 +130,8 @@ void rotate(float degrees) {
   // Store the initial orientation of the robot
   mpu.update();
   float initialRotation = mpu.getAngleZ();
-
+  stop();
+  float input[3] = {0.0};
   // Set the input forces to zero
   input[0] = 0.0; input[1] = 0.0;
 
@@ -165,4 +172,51 @@ void rotate(float degrees) {
   input[2] = 0.0;
   stop();
 
+}
+
+
+void movementFor(float input[], int givenDistance){
+  mpu.update();
+
+  float rotz = mpu.getAngleZ();
+  float tempz = rotz;
+
+
+
+  encoderCount1 = 0;
+  encoderCount2 = 0;
+  encoderCount3 = 0;
+
+  float distanceTraveled1 = encoderCount1 * distancePerPulse;
+  float distanceTraveled2 = encoderCount2 * distancePerPulse;
+  float distanceTraveled3 = encoderCount3* distancePerPulse;
+
+  float distanceX = distanceTraveled1 - (distanceTraveled2 / 2) + (distanceTraveled3 * sqrt(3)) / 2;
+  float distanceY = - (distanceTraveled2 / 2) - ((distanceTraveled3 * sqrt(3)) / 2);
+
+  float distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+
+  while(distance < givenDistance){
+
+    //Get the updated gyroscope data
+    mpu.update();
+
+    //Read the current rotation around the z-axis
+    rotz = mpu.getAngleZ();
+
+    //adjust the rotation
+    input[2] = (tempz - rotz) / 20;
+
+    distanceTraveled1 = encoderCount1 * distancePerPulse;
+    distanceTraveled2 = encoderCount2 * distancePerPulse;
+    distanceTraveled3 = encoderCount3 * distancePerPulse;
+
+    distanceX = distanceTraveled1 - (distanceTraveled2 / 2) + (distanceTraveled3 * sqrt(3)) / 2;
+    distanceY = - (distanceTraveled2 / 2) - ((distanceTraveled3 * sqrt(3)) / 2);
+
+    distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+    movement(input);
+  }
+  stop();
+  return 1;
 }

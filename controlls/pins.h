@@ -16,8 +16,8 @@
 #define inputB1 2
 #define inputA2 18
 #define inputB2 19
-#define inputA3 21
-#define inputB3 20
+#define inputA3 11
+#define inputB3 10
 
 
 #define PPR 360  // Pulse Per Rotation
