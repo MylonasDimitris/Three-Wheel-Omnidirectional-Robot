@@ -1,9 +1,4 @@
-/*By inputting the desired vector at the array
- input the program outputs the desired ration 
- in which the motors should run in order for
-  the robot to move in the correct direction.*/
-
-//Libraries for gyroscope
+//Libraries
 #include "functions.h"
 #include "pins.h"
 #include <EnableInterrupt.h>
@@ -78,34 +73,20 @@ int a = 0;
  * to perform the movement once, ensuring the action is executed only once by setting a flag.
  */
 void loop() {
-  // Get gyroscope data
-  // mpu.update();
-
-  // float rotx = mpu.getAngleX();
-  // float roty = mpu.getAngleY();
-  // float rotz = mpu.getAngleZ();
-
-
-
   // Check if there is any incoming serial data
   if (Serial.available() > 0) {
     // Read the incoming byte
     char incomingByte = Serial.read();
 
-    // Read the current rotation around the z-axis
-    // rotz = mpu.getAngleZ();
-
     // If the incoming byte is 'S', perform the movement
     if (incomingByte == 'S') {
-      // float tempz = rotz;
-
       delay(100);
       
       // Set the input vector for the movement function
       input[0] = 0.0; input[1] = 1.0; input[2] = 0.0;
 
 
-      // Perform the movement in a loop
+      // Perform the movement
       while (a == 0) {
         movementFor(input, 30);
 
